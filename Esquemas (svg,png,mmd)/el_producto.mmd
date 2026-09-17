@@ -1,0 +1,82 @@
+flowchart LR
+
+    %% =========================
+    %% DATASETS
+    %% =========================
+    subgraph DATA["Datasets"]
+        EICU["eICU"]
+        CIFAR["CIFAR-10N"]
+        HEART["Heart"]
+        DPROD["D_Product"]
+    end
+
+    %% =========================
+    %% EXTRACCIÓN eICU
+    %% =========================
+    EXTRACT["extract_eicu_duckdb.py"]
+
+    %% =========================
+    %% LOADERS
+    %% =========================
+    subgraph LOADERS["Loaders"]
+        LEICU["eicu_loader.py"]
+        LCIFAR["cifar10n_loader.py"]
+        LHEART["heart_loader.py"]
+        LDPROD["d_product_loader.py"]
+    end
+
+    %% =========================
+    %% NOTEBOOKS
+    %% =========================
+    subgraph NOTEBOOKS["Experimentos"]
+        NEICU["experimento_eICU.ipynb"]
+        NCIFAR["experimento_CIFAR-10N.ipynb"]
+        NHEART["experimento_Heart.ipynb"]
+        NDPROD["experimento_D_Product.ipynb"]
+    end
+
+    %% =========================
+    %% MOTOR
+    %% =========================
+    MOTOR["dvgate.py"]
+
+    %% =========================
+    %% FLUJO DATASET → LOADER
+    %% =========================
+    EICU --> EXTRACT
+    EXTRACT --> LEICU
+
+    CIFAR --> LCIFAR
+    HEART --> LHEART
+    DPROD --> LDPROD
+
+    %% =========================
+    %% LOADER → NOTEBOOK
+    %% =========================
+    LEICU --> NEICU
+    LCIFAR --> NCIFAR
+    LHEART --> NHEART
+    LDPROD --> NDPROD
+
+    %% =========================
+    %% NOTEBOOK → MOTOR
+    %% =========================
+    NEICU --> MOTOR
+    NCIFAR --> MOTOR
+    NHEART --> MOTOR
+    NDPROD --> MOTOR
+
+    %% =========================
+    %% ESTILOS
+    %% =========================
+    classDef dataset fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef loader fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef notebook fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef motor fill:#f3e5f5,stroke:#6a1b9a,stroke-width:3px
+    classDef extract fill:#eeeeee,stroke:#424242,stroke-width:2px
+
+    class EICU,CIFAR,HEART,DPROD dataset
+    class LEICU,LCIFAR,LHEART,LDPROD loader
+    class NEICU,NCIFAR,NHEART,NDPROD notebook
+    class MOTOR motor
+    class EXTRACT extract

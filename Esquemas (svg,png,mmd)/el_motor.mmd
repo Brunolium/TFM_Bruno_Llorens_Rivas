@@ -1,0 +1,143 @@
+flowchart LR
+
+%% =========================================================
+%% SOPORTE
+%% =========================================================
+
+subgraph S2["Piezas de soporte"]
+
+    META["source_meta"]
+    CORRUPT["corrupt_labels"]
+    GAME["make_game"]
+
+end
+
+
+%% =========================================================
+%% MOTOR DE REPARTO
+%% =========================================================
+
+subgraph S1["Motor de reparto"]
+
+    FIT["_fit"]
+    AP["_ap"]
+    AUC["_auc"]
+    SHAP["exact_shapley"]
+    TMC["tmc_shapley"]
+
+end
+
+
+%% =========================================================
+%% PANEL
+%% =========================================================
+
+subgraph S3["Panel y compuerta"]
+
+    DAMAGE["check_damage"]
+    MONO["check_monotonicity"]
+    RES["check_resolution"]
+    BOOT["_paired_boot"]
+    POWER["check_power"]
+    TRIVIAL["check_trivial"]
+    PANEL["run_panel"]
+    GATE["gate"]
+
+end
+
+
+%% =========================================================
+%% CIERRE
+%% =========================================================
+
+subgraph S4["Cierre y verificación"]
+
+    EVAL["eval_test"]
+    CLOSE["close_loop"]
+    STABILITY["stability_check"]
+    BUDGET["budget_report"]
+
+end
+
+
+%% =========================================================
+%% NOTEBOOK Y LOADERS
+%% =========================================================
+
+NOTEBOOK["Notebook"]
+LOADERS["Loaders"]
+
+
+%% =========================================================
+%% FLUJO PRINCIPAL
+%% =========================================================
+
+NOTEBOOK --> GAME
+GAME --> FIT
+GAME --> AP
+
+NOTEBOOK --> PANEL
+
+PANEL --> DAMAGE
+PANEL --> TMC
+PANEL --> MONO
+PANEL --> RES
+PANEL --> POWER
+PANEL --> TRIVIAL
+PANEL --> GATE
+
+DAMAGE --> FIT
+DAMAGE --> AP
+
+POWER --> EVAL
+POWER --> BOOT
+
+BOOT --> AP
+BOOT --> AUC
+
+NOTEBOOK --> CLOSE
+CLOSE --> EVAL
+CLOSE --> BOOT
+
+EVAL --> FIT
+EVAL --> AP
+EVAL --> AUC
+
+
+%% =========================================================
+%% SHAPLEY
+%% =========================================================
+
+NOTEBOOK --> SHAP
+NOTEBOOK --> TMC
+
+SHAP -.-> V["v(S)"]
+TMC -.-> V
+
+
+%% =========================================================
+%% FUNCIONES ESPECÍFICAS
+%% =========================================================
+
+NOTEBOOK --> CORRUPT
+NOTEBOOK --> STABILITY
+NOTEBOOK --> BUDGET
+
+LOADERS --> META
+
+
+%% =========================================================
+%% ESTILOS
+%% =========================================================
+
+classDef core fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+classDef panel fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+classDef support fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+classDef verify fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px;
+classDef external fill:#eeeeee,stroke:#424242,stroke-width:2px;
+
+class FIT,AP,AUC,SHAP,TMC core;
+class DAMAGE,MONO,RES,BOOT,POWER,TRIVIAL,PANEL,GATE panel;
+class META,CORRUPT,GAME support;
+class EVAL,CLOSE,STABILITY,BUDGET verify;
+class NOTEBOOK,LOADERS,V external;
